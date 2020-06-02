@@ -107,3 +107,68 @@ sendXml()
 - 通过extends来是想类的继承
 - 通过super调用弗雷的构造方法
 - 重写父类中继承的一般方法
+## 以下封装axios代码来自csdn
+```js
+import axios from 'axios'
+import qs from 'qs'
+
+axios.interceptors.request.use(config => {
+    return config;
+},error => {
+    return Promise.reject(error)
+})
+
+axios.interceptors.response.use(res => {
+    return res.data
+
+},error => {
+    return Promise.reject(error)
+})
+
+const errorState = (res) => {
+
+    if (res && (res.status === 200 )){
+        return res
+
+    } else {
+
+        console.log("zhuangtai budui")
+    }
+}
+
+const successState = (res) => {
+
+    return res
+
+}
+
+const apiAxios = (method, url, params) => {
+
+    return new Promise((resolve, reject) => {
+        axios({
+            method,
+            url,
+            params: method === 'GET' || method === 'DELETE' ? params : null,
+            data: method === 'POST' || method === 'PUT' ? qs.stringify(params) : null,
+            timeout: 10000
+        })
+        .then(res => {
+            successState(res)
+            resolve(res)
+        })
+        .catch(res => {
+            errorState(res)
+            reject(res)
+        })
+
+    })
+
+}
+
+export default {
+    getAxios: (url, params) => apiAxios('GET', url, params),
+    postAxios: (url, params) => apiAxios('POST', url, params),
+    putAxios: (url, params) => apiAxios('PUT', url, params),
+    delectAxios: (url, params) => apiAxios('DELECT', url, params),
+}
+```
